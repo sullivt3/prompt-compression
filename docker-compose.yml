@@ -1,0 +1,41 @@
+services:
+  gateway:
+    build: .
+    command: ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    ports: ["127.0.0.1:8000:8000"]
+    environment:
+      GATEWAY_OPENAI_API_KEY: ${GATEWAY_OPENAI_API_KEY:-}
+      GATEWAY_ENVIRONMENT: ${GATEWAY_ENVIRONMENT:-development}
+      GATEWAY_PRICING: "${GATEWAY_PRICING:-{}}"
+      GATEWAY_LOCAL_COMPUTE_COST_PER_SECOND: ${GATEWAY_LOCAL_COMPUTE_COST_PER_SECOND:-0}
+      GATEWAY_DATABASE_URL: postgresql+asyncpg://gateway:${POSTGRES_PASSWORD:-gateway}@postgres:5432/gateway
+      GATEWAY_REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    security_opt: ["no-new-privileges:true"]
+    read_only: true
+    tmpfs: ["/tmp"]
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: gateway
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gateway}
+      POSTGRES_DB: gateway
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gateway"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  postgres-data:

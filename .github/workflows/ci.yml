@@ -1,0 +1,54 @@
+name: Validate gateway
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: gateway
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: gateway
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U gateway"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      GATEWAY_DATABASE_URL: postgresql+asyncpg://gateway:ci-only-password@localhost:5432/gateway
+      GATEWAY_REDIS_URL: redis://localhost:6379/0
+      GATEWAY_ENVIRONMENT: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.13.8"
+          enable-cache: true
+      - run: uv sync --frozen --python 3.12
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy app
+      - run: uv run python -m scripts.bootstrap
+      - run: uv run pytest --cov=app --cov-report=term-missing
+      - run: uv run python -m scripts.check_dependencies
+      - run: uv run python -m scripts.check_gateway
+      - run: uv run python -m scripts.benchmark
+      - run: uv run pip-audit
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark
+          path: artifacts/
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose config --quiet
+      - run: docker build -t prompt-gateway:ci .
