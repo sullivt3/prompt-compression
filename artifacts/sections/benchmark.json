@@ -1,0 +1,203 @@
+{
+  "summary": {
+    "model": "gpt-4.1-mini",
+    "count": 16,
+    "errors": 0,
+    "eligible_rate": 0.75,
+    "applied_rate": 0.5,
+    "pass_through_rate": 0.5,
+    "original_tokens": 413,
+    "optimized_tokens": 320,
+    "saved_tokens": 93,
+    "reduction_percent": 22.5181598062954,
+    "validation_rejection_rate": 0.0,
+    "latency_p50_ms": 1.6750789982324932,
+    "latency_p95_ms": 6.279592998907901,
+    "rule_effectiveness": {
+      "explanation_phrase": 17,
+      "purpose_phrase": 9,
+      "conversational_filler": 8
+    },
+    "tokenizer_warmed": true,
+    "quality_evaluated": false,
+    "estimate": true
+  },
+  "rows": [
+    {
+      "id": "sections-code",
+      "category": "code",
+      "original_tokens": 40,
+      "optimized_tokens": 29,
+      "saved_tokens": 11,
+      "applied": true,
+      "skip_reason": null,
+      "optimization_latency_ms": 6.279592998907901,
+      "error": null
+    },
+    {
+      "id": "sections-shell",
+      "category": "shell",
+      "original_tokens": 33,
+      "optimized_tokens": 22,
+      "saved_tokens": 11,
+      "applied": true,
+      "skip_reason": null,
+      "optimization_latency_ms": 2.4090250008157454,
+      "error": null
+    },
+    {
+      "id": "sections-json",
+      "category": "json",
+      "original_tokens": 35,
+      "optimized_tokens": 24,
+      "saved_tokens": 11,
+      "applied": true,
+      "skip_reason": null,
+      "optimization_latency_ms": 3.2006749970605597,
+      "error": null
+    },
+    {
+      "id": "sections-yaml",
+      "category": "yaml",
+      "original_tokens": 33,
+      "optimized_tokens": 22,
+      "saved_tokens": 11,
+      "applied": true,
+      "skip_reason": null,
+      "optimization_latency_ms": 2.1315470003173687,
+      "error": null
+    },
+    {
+      "id": "sections-xml",
+      "category": "xml",
+      "original_tokens": 36,
+      "optimized_tokens": 25,
+      "saved_tokens": 11,
+      "applied": true,
+      "skip_reason": null,
+      "optimization_latency_ms": 3.421012996113859,
+      "error": null
+    },
+    {
+      "id": "sections-quoted",
+      "category": "quoted",
+      "original_tokens": 30,
+      "optimized_tokens": 19,
+      "saved_tokens": 11,
+      "applied": true,
+      "skip_reason": null,
+      "optimization_latency_ms": 1.9495209999149665,
+      "error": null
+    },
+    {
+      "id": "sections-constraints",
+      "category": "constraints",
+      "original_tokens": 31,
+      "optimized_tokens": 20,
+      "saved_tokens": 11,
+      "applied": true,
+      "skip_reason": null,
+      "optimization_latency_ms": 2.121355995768681,
+      "error": null
+    },
+    {
+      "id": "sections-plain",
+      "category": "plain",
+      "original_tokens": 34,
+      "optimized_tokens": 18,
+      "saved_tokens": 16,
+      "applied": true,
+      "skip_reason": null,
+      "optimization_latency_ms": 2.258268003060948,
+      "error": null
+    },
+    {
+      "id": "bypass-unclosed-code",
+      "category": "ambiguous-or-exact",
+      "original_tokens": 17,
+      "optimized_tokens": 17,
+      "saved_tokens": 0,
+      "applied": false,
+      "skip_reason": "ambiguous_protected_content",
+      "optimization_latency_ms": 0.5661379982484505,
+      "error": null
+    },
+    {
+      "id": "bypass-unclosed-quote",
+      "category": "ambiguous-or-exact",
+      "original_tokens": 14,
+      "optimized_tokens": 14,
+      "saved_tokens": 0,
+      "applied": false,
+      "skip_reason": "protected_content",
+      "optimization_latency_ms": 0.22692699712933972,
+      "error": null
+    },
+    {
+      "id": "bypass-invalid-json",
+      "category": "ambiguous-or-exact",
+      "original_tokens": 16,
+      "optimized_tokens": 16,
+      "saved_tokens": 0,
+      "applied": false,
+      "skip_reason": "ambiguous_protected_content",
+      "optimization_latency_ms": 0.9430200007045642,
+      "error": null
+    },
+    {
+      "id": "bypass-invalid-xml",
+      "category": "ambiguous-or-exact",
+      "original_tokens": 19,
+      "optimized_tokens": 19,
+      "saved_tokens": 0,
+      "applied": false,
+      "skip_reason": "ambiguous_protected_content",
+      "optimization_latency_ms": 0.9497210048721172,
+      "error": null
+    },
+    {
+      "id": "bypass-exact",
+      "category": "ambiguous-or-exact",
+      "original_tokens": 16,
+      "optimized_tokens": 16,
+      "saved_tokens": 0,
+      "applied": false,
+      "skip_reason": "protected_content",
+      "optimization_latency_ms": 0.29200699646025896,
+      "error": null
+    },
+    {
+      "id": "bypass-transform",
+      "category": "ambiguous-or-exact",
+      "original_tokens": 15,
+      "optimized_tokens": 15,
+      "saved_tokens": 0,
+      "applied": false,
+      "skip_reason": "protected_content",
+      "optimization_latency_ms": 0.16456100274808705,
+      "error": null
+    },
+    {
+      "id": "bypass-proofread",
+      "category": "ambiguous-or-exact",
+      "original_tokens": 16,
+      "optimized_tokens": 16,
+      "saved_tokens": 0,
+      "applied": false,
+      "skip_reason": "protected_content",
+      "optimization_latency_ms": 0.12727399735013023,
+      "error": null
+    },
+    {
+      "id": "bypass-entities",
+      "category": "ambiguous-or-exact",
+      "original_tokens": 28,
+      "optimized_tokens": 28,
+      "saved_tokens": 0,
+      "applied": false,
+      "skip_reason": "ambiguous_protected_content",
+      "optimization_latency_ms": 1.4006369965500198,
+      "error": null
+    }
+  ]
+}

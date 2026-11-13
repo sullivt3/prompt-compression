@@ -1,6 +1,7 @@
 # Implementation status
 
-Latest validation: **64 tests passing, 92% coverage**, Ruff and strict mypy passing.
+Latest validation (2026-11-13): **157 tests passing**,
+Ruff and strict mypy passing. The previous coverage run measured 93%.
 The continuation section below records the latest concurrency and streaming fixes.
 
 ## Plan and architectural decisions
@@ -220,3 +221,176 @@ migration state and request/concurrency limit enforcement.
 Remaining work: live-provider validation still requires configured credentials;
 quality evaluation and representative gateway performance measurements remain open.
 No paid provider calls, production deployment, commit or push were performed.
+
+
+## Prompt Lab test page — 2026-11-12
+
+Added `/playground` and a root redirect to a responsive test page served by the
+existing gateway. It submits only to `/v1/optimize`; no LLM/provider call occurs.
+Features include prompt input, three example prompts, tokenizer model/strategy
+controls, side-by-side compressed output, copy, token counts/savings/percentage,
+server compression latency, browser total request time, rules, validation details
+and explicit pass-through/error states. First-run tokenizer initialization can
+increase the server compression time; the displayed measurement is not replaced
+with a warmed estimate.
+
+The page uses the existing tenant gateway key, authentication, rate/concurrency
+limits and metadata persistence. No key-generation HTTP endpoint was added. Keys
+remain in the page session; no browser storage is used. Static assets are local,
+CSP restricts scripts/styles/connections to the same origin, results use text
+rendering, and public static content contains no credentials. The installed Python
+package includes all three web assets.
+
+Files changed: app/api/playground.py, app/web/index.html, app/web/style.css,
+app/web/playground.js, app/main.py, pyproject.toml,
+tests/integration/test_playground.py, README.md and docs/api.md.
+
+Validation: 65 pytest tests pass, Ruff lint/format and strict mypy pass. Local Docker
+image rebuilt and Compose started. Chrome desktop/mobile QA exercised real
+PostgreSQL/Redis authentication and preview, displayed metrics, clipboard copy,
+off/protected-content results, stale-result clearing, HTML-safe rendering, 401/429
+errors, and a mobile layout without horizontal overflow. Temporary browser-test
+tenants/keys/usage were removed after testing. No paid provider calls occurred.
+
+These page changes are not committed or pushed. Local URL:
+http://localhost:8000/playground. Create a gateway key with the existing admin CLI
+if needed, then enter it in the connection field. Browser QA screenshots are local
+artifacts in /tmp, not published content.
+
+
+## Sentence-aware prose compression — 2026-11-13
+
+User-reported example previously passed eligibility but matched none of the four
+original rules. Added sentence-aware prefix matching, the independently configurable
+`request_wrapper` rule for approved indirect requests, and `test_introduction` for
+explicit test-purpose wrappers followed by how/whether/if clauses. No global stopword
+or sentence deletion was introduced. Whole-message protected-content bypass and
+user-role restrictions remain in force. The 32-transformation budget now stops
+processing as soon as exceeded. Sentence matching uses regex positions rather than
+copying a suffix for every possible sentence boundary.
+
+The reported prompt now becomes “Paste a prompt below. This tests how many filler
+words can be removed form the input.” With gpt-4.1-mini it goes from 23 to 18 text
+tokens: 5 saved (21.7%). The original typo is preserved deliberately.
+
+Files changed: app/compression/base.py, app/compression/rules.py,
+tests/unit/test_prose_compression.py, tests/integration/test_preview.py,
+docs/compression.md and docs/roadmap.md. Earlier playground changes were preserved.
+
+Validation: 86 tests pass, Ruff lint/format and strict mypy pass. Tests cover the exact
+reported prompt through router and authenticated preview, other approved wrappers,
+nonmatching prose, quotes, code, URLs, numbers, constraints, disabled rules and
+non-user roles. Hypothesis exercises sentence combinations for idempotency and
+metadata replay. The original 120-prompt benchmark runs with zero errors and no
+changed token decisions, protecting the existing baseline; it does not contain the
+new prose patterns. Warmed local benchmark compression p95 was 12.45ms on this run.
+No inference calls or semantic-equivalence claims. The local image rebuilt and
+Compose restarted successfully. The exact reported prompt was verified inside
+the rebuilt container with the same 23 → 18 token result. Refresh the playground
+to try the updated engine. Changes remain uncommitted and unpushed.
+
+## Playground key-entry check — 2026-11-13
+
+The Compress button is disabled in the initial HTML and while the gateway key is
+empty or whitespace-only. Input/change events update the button label and state;
+clearing the key disables it again. Request completion restores the correct state
+rather than enabling the button unconditionally. Existing submit-handler checks
+and backend authentication still apply, so presence in the field is not treated
+as proof that the key is valid.
+
+Files changed: app/web/index.html and app/web/playground.js. Validation: 86 tests,
+Ruff lint/format and strict mypy pass; local image rebuilt successfully. Chrome verification passed for initial, blank and whitespace-only keys, input/change
+events, clearing the key, and button state after completion. A direct submit event
+with a missing key made no preview request. Browser preview responses were mocked;
+no provider calls occurred.
+
+## Repeated-input diagnosis and playground feedback — 2026-11-13
+
+The reported unchanged input was confirmed by the user to be the already-compressed
+18-token result (“This tests…”), rather than the 23-token original (“This is just a
+test to see…”). The running engine compresses the original correctly. An unchanged
+second pass is intentional idempotency, not evidence of a stale engine.
+
+Added a Filler-word test example that loads the exact original text. Successful
+results now report original/optimized counts and savings in the prominent status
+line; unchanged results show the actual skip explanation and submitted token count.
+Off mode now explicitly directs the user to the Algorithmic strategy. Authentication,
+protected-content checks and compression policy were not weakened.
+
+Files changed: app/web/index.html and app/web/playground.js. Validation: 86 tests,
+Ruff lint/format and strict mypy pass. Local image rebuilt. Live Chrome verification passed against real PostgreSQL/Redis:
+the example returned 23 → 18 tokens (5 saved, 21.7%), the already-compressed input
+showed its 18-token skip explanation, and off mode showed the strategy guidance.
+Temporary test keys/tenants and usage were cleaned up. No provider calls occurred.
+
+
+## Phrase rewrites and protected-section compression — 2026-11-13
+
+Implemented the recommended deterministic expansion. Added independently enabled
+`explanation_phrase` (“provide an explanation of” → “Explain”) and `purpose_phrase`
+(“in order to” → “to” within affirmative instruction sentences, excluding explicit
+metalinguistic discussion). No global stopword deletion or inference calls.
+
+Introduced a compression plan that partitions complete code fences, plain-prose
+paragraphs, and unchanged separators. Eligible prose paragraphs can compress around
+protected code, quoted/inline-code paragraphs, structured JSON/YAML/XML blocks,
+URLs, commands, numeric values and constraint paragraphs. Unclosed or malformed
+boundaries, declarations/entities, exact-text and transformation instructions still
+bypass the entire message. This is paragraph-level isolation; mixed inline prose
+and protected content is still conservatively skipped. Protected sections are not
+interpreted as executable instructions or normalized/reformatted.
+
+Validation independently compares protected partition regions/separators, replays
+all transformations with original-message-relative offsets for each candidate step,
+and applies the existing tokenizer/savings and request-structure checks. Hypothesis
+tests exercise arbitrary fenced contents, idempotency and role preservation.
+A Prose + code example is available in the playground with new skip diagnostics.
+
+Validation: 125 tests pass with 93% statement coverage; Ruff lint/format and strict
+mypy pass. The original 120-prompt benchmark still has zero errors and saves 120
+of 13,456 tokens (0.89%). A separate targeted 16-prompt section workload has zero
+errors: 413 → 320 tokens (93 saved, 22.5% overall), with all eight eligible cases
+compressing and all eight malformed/exact-task cases passing through. Reports are
+in artifacts/sections/. These are synthetic regression results, not response-quality
+or customer-savings claims. The demonstrated mixed prose/Python example is 39 → 28
+tokens (11 saved, 28.2%) while preserving the code block byte-for-byte.
+
+Files changed: app/compression/base.py, rules.py, eligibility.py and validator.py;
+tests/unit/test_segment_compression.py; tests/integration/test_preview.py;
+tests/benchmarks/sections.json; artifacts/sections/*; app/web/index.html and
+playground.js; docs/compression.md, benchmarks.md and roadmap.md.
+
+The local image rebuilt and Compose restarted successfully. Live Chrome verification
+passed against real PostgreSQL/Redis: mixed-content compression returned 39 → 28
+tokens with code unchanged, rule metadata was displayed, malformed fences passed
+through, and the mobile layout fit without horizontal overflow. Temporary QA keys,
+tenants and usage records were cleaned up afterward. Semantic compression remains unavailable and disabled; no paid provider
+calls, production deployment, commits or pushes were performed. Earlier uncommitted
+playground and algorithm work was preserved.
+
+
+## Greeting, thanks and courtesy-apology checks — 2026-11-13
+
+Expanded greeting_removal and added gratitude_removal, gratitude_closing and
+apology_removal. Approved courteous prefixes require a known instruction after
+them; a closing thanks requires an earlier affirmative instruction in the same
+eligible prose paragraph. A context guard excludes requested tone/emotion,
+dialogue, apology/thanks tasks and metalinguistic examples. This does not indiscriminately
+delete emotional or affectionate language, substantive apologies, or quoted content.
+Standalone courtesy-only paragraphs remain unchanged rather than changing partition
+boundaries. Each rule is independently configurable and reports its transformation.
+
+Example: “Hi there, sorry to bother you, can you please explain Docker. Thanks!”
+becomes “explain Docker.” Measured gpt-4.1-mini text-token counts: 16 → 4 (12 saved).
+Added Greetings & thanks to the playground examples.
+
+Files changed: app/compression/base.py and rules.py; tests/unit/test_courtesies.py;
+app/web/index.html and playground.js; docs/compression.md. Validation: 157 tests pass,
+Ruff lint/format and strict mypy pass. Cases cover greetings, gratitude/apologies,
+chained wrappers, role protection, metadata replay, idempotency, disabled rules,
+emotional context and meaningful task wording. Hypothesis also covers combinations
+of greeting/thanks/apology/request prefixes and closings for idempotency and replay.
+The local image rebuilt successfully. Live Chrome checks against PostgreSQL/Redis
+verified the courtesy example at 16 → 4 tokens and confirmed that emotional context,
+requested apologies and affectionate-writing instructions were preserved. Temporary
+QA tenant/key/usage records were cleaned up. No provider calls, commit or push.

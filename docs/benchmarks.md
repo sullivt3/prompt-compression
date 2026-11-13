@@ -28,3 +28,16 @@ requirements, parsed structured outputs, and task-specific grading. Execute gene
 code only in an isolated sandbox. Use blinded human review and optional model
 judging with a disclosed rubric. Never infer semantic equivalence from text similarity.
 No response-quality or paid-provider benchmark has been run in this project.
+
+
+The section-compression regression workload is separate from the original 120-prompt
+baseline: `python -m scripts.benchmark --dataset tests/benchmarks/sections.json --output artifacts/sections`.
+It contains eight eligible mixed-content/phrase examples and eight malformed or
+exact-task examples expected to pass through. The measured run had zero errors,
+413 original tokens and 320 optimized tokens (93 saved, 22.5% overall). All eight
+eligible examples compressed; all eight malformed/exact-task examples passed through.
+Warm compression p95 was 6.28ms. This small, deliberately targeted synthetic dataset
+measures regression behavior, not general customer savings or response quality.
+The original 120-prompt workload still saved 120 tokens (0.89%) with zero errors;
+its measured warm p95 on the same development session was 25.02ms. Runs have different
+workloads and timing variation, so their p95 values are not a speedup comparison.

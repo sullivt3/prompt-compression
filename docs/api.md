@@ -1,5 +1,12 @@
 # API contract
 
+`GET /playground` serves the Prompt Lab test page; `/` redirects there. The page
+uses the authenticated `/v1/optimize` endpoint and never invokes chat completions.
+It shows server compression latency separately from browser-observed total request
+time. The static page is public, but all preview requests still require a tenant key
+and enforce existing limits. Keys remain only in the page session; prompts/results
+are rendered as text, and no external scripts or fonts are loaded.
+
 Development-only `/docs` and `/openapi.json` contain the generated schemas.
 All product endpoints require `Authorization: Bearer <gateway-key>`. Public health:
 `GET /v1/health`; dependency readiness: `GET /v1/ready` (200 or 503).

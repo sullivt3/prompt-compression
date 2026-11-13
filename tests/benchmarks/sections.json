@@ -1,0 +1,82 @@
+[
+  {
+    "id": "sections-code",
+    "category": "code",
+    "text": "Can you please provide an explanation of this example?\n\n```python\ndef add(a, b):\n    return a + b\n```\n\nProvide an explanation of the result in order to teach a beginner."
+  },
+  {
+    "id": "sections-shell",
+    "category": "shell",
+    "text": "Can you please provide an explanation of this example?\n\n~~~sh\nkubectl get pods\n~~~\n\nProvide an explanation of the result in order to teach a beginner."
+  },
+  {
+    "id": "sections-json",
+    "category": "json",
+    "text": "Can you please provide an explanation of this example?\n\n{\"replicas\": 3, \"enabled\": true}\n\nProvide an explanation of the result in order to teach a beginner."
+  },
+  {
+    "id": "sections-yaml",
+    "category": "yaml",
+    "text": "Can you please provide an explanation of this example?\n\nreplicas: 3\nenabled: true\n\nProvide an explanation of the result in order to teach a beginner."
+  },
+  {
+    "id": "sections-xml",
+    "category": "xml",
+    "text": "Can you please provide an explanation of this example?\n\n<config><replicas>3</replicas></config>\n\nProvide an explanation of the result in order to teach a beginner."
+  },
+  {
+    "id": "sections-quoted",
+    "category": "quoted",
+    "text": "Can you please provide an explanation of this example?\n\n\"Can you please explain Docker?\"\n\nProvide an explanation of the result in order to teach a beginner."
+  },
+  {
+    "id": "sections-constraints",
+    "category": "constraints",
+    "text": "Can you please provide an explanation of this example?\n\nNever delete backups. Keep three examples.\n\nProvide an explanation of the result in order to teach a beginner."
+  },
+  {
+    "id": "sections-plain",
+    "category": "plain",
+    "text": "Can you please provide an explanation of this example?\n\nProvide an explanation of Docker in order to understand isolation.\n\nProvide an explanation of the result in order to teach a beginner."
+  },
+  {
+    "id": "bypass-unclosed-code",
+    "category": "ambiguous-or-exact",
+    "text": "Can you please provide an explanation of this example?\n\n```python\nprint(\"hello\")"
+  },
+  {
+    "id": "bypass-unclosed-quote",
+    "category": "ambiguous-or-exact",
+    "text": "Can you please provide an explanation of this example?\n\n\"An unfinished quote"
+  },
+  {
+    "id": "bypass-invalid-json",
+    "category": "ambiguous-or-exact",
+    "text": "Can you please provide an explanation of this example?\n\n{\"replicas\": 3"
+  },
+  {
+    "id": "bypass-invalid-xml",
+    "category": "ambiguous-or-exact",
+    "text": "Can you please provide an explanation of this example?\n\n<config><value>3</config>"
+  },
+  {
+    "id": "bypass-exact",
+    "category": "ambiguous-or-exact",
+    "text": "Can you please provide an explanation of this example?\n\nPreserve every word above."
+  },
+  {
+    "id": "bypass-transform",
+    "category": "ambiguous-or-exact",
+    "text": "Can you please provide an explanation of this example?\n\nRewrite the following text."
+  },
+  {
+    "id": "bypass-proofread",
+    "category": "ambiguous-or-exact",
+    "text": "Can you please provide an explanation of this example?\n\nProofread the following passage."
+  },
+  {
+    "id": "bypass-entities",
+    "category": "ambiguous-or-exact",
+    "text": "Can you please provide an explanation of this example?\n\n<!DOCTYPE a [<!ENTITY x \"text\">]><a>&x;</a>"
+  }
+]

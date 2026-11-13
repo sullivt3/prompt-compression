@@ -21,7 +21,12 @@ docker compose exec gateway python scripts/create_api_key.py --name Developer
 curl http://localhost:8000/v1/ready
 ```
 
-Keep the generated gateway key private. Development API docs: http://localhost:8000/docs.
+Keep the generated gateway key private. Open the [Prompt Lab](http://localhost:8000/playground)
+to paste a prompt and inspect the compressed text, processing time, token savings,
+applied rules and validation details. Enter your gateway key in the connection field;
+it is not saved in browser storage. No provider credential or LLM call is needed.
+
+Development API docs: http://localhost:8000/docs.
 Preview uses no LLM:
 
 ```sh

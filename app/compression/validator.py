@@ -1,7 +1,7 @@
 from typing import Any
 
 from app.compression.base import CompressionContext, CompressionResult, ValidationResult
-from app.compression.eligibility import skip_reason
+from app.compression.eligibility import protected_regions_unchanged, skip_reason
 from app.compression.rules import APPROVED_RULES, RuleCompressor
 from app.compression.tokenizer import TokenCounter
 
@@ -21,7 +21,8 @@ class CompressionValidator:
         optimized = self.counter.count_text(result.optimized, context.model)
         replay = RuleCompressor().compress(result.original, context)
         checks = {
-            "protected_content": skip_reason(result.original, context) is None,
+            "protected_content": skip_reason(result.original, context) is None
+            and protected_regions_unchanged(result.original, result.optimized, context),
             "approved_rules": all(
                 t.rule in APPROVED_RULES & context.enabled_rules for t in result.transformations
             ),

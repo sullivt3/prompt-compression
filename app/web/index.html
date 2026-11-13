@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Prompt Lab · Prompt Gateway</title>
+  <link rel="stylesheet" href="/playground/assets/style.css">
+  <script src="/playground/assets/playground.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/playground" aria-label="Prompt Gateway home"><span class="brand-icon" aria-hidden="true">↘</span> prompt<span class="brand-light">gateway</span></a>
+    <span class="local-badge"><span aria-hidden="true"></span> Local compression</span>
+  </header>
+  <main>
+    <div class="intro"><p class="eyebrow">THE COMPRESSION PLAYGROUND</p><h1>Same intent.<br><span>Fewer tokens.</span></h1><p class="lede">Put a prompt to the test. See what the gateway can trim,<br class="desktop-break"> what it preserves, and exactly how much you save.</p></div>
+    <form id="compression-form" novalidate>
+      <details class="connection" open>
+        <summary><span><span class="connection-dot" aria-hidden="true"></span> Gateway connection</span><span class="summary-note">API key required <span aria-hidden="true">⌄</span></span></summary>
+        <div class="connection-body">
+          <div><label for="api-key">Gateway API key</label><input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="pgw_…" required aria-describedby="key-help"><p id="key-help" class="helper">Used for this page session. Never saved in browser storage.</p></div>
+          <details class="key-instructions"><summary>Need a key?</summary><p>From the project directory, run this command and paste the generated gateway key above:</p><code>docker compose exec gateway python scripts/create_api_key.py --name Playground</code></details>
+        </div>
+      </details>
+      <section class="workspace" aria-label="Prompt comparison">
+        <div class="editor-panel">
+          <div class="panel-heading"><div><span class="step">01</span><h2>Your prompt</h2></div><span class="panel-caption">INPUT</span></div>
+          <label class="sr-only" for="prompt">Prompt to compress</label>
+          <textarea id="prompt" maxlength="200000" required spellcheck="false" placeholder="Paste a prompt here, or try one of the examples below…"></textarea>
+          <div class="editor-footer"><span id="character-count">0 characters</span><button class="text-button" type="button" id="clear">Clear</button></div>
+          <div class="examples"><span>TRY AN EXAMPLE</span><div><button type="button" data-example="simple">Everyday question <span aria-hidden="true">↗</span></button><button type="button" data-example="technical">Technical request <span aria-hidden="true">↗</span></button><button type="button" data-example="filler">Filler-word test <span aria-hidden="true">↗</span></button><button type="button" data-example="mixed">Prose + code <span aria-hidden="true">↗</span></button><button type="button" data-example="courtesy">Greetings &amp; thanks <span aria-hidden="true">↗</span></button><button type="button" data-example="protected">Protected content <span aria-hidden="true">↗</span></button></div></div>
+        </div>
+        <div class="editor-panel result-panel">
+          <div class="panel-heading"><div><span class="step">02</span><h2>Compressed prompt</h2></div><span id="result-badge" class="result-badge" hidden></span></div>
+          <div id="empty-state" class="empty-state"><span class="empty-icon" aria-hidden="true">↘</span><h3>A little less goes a long way.</h3><p>Your compressed prompt will appear here.<br>Every result uses the actual tokenizer.</p></div>
+          <pre id="optimized" class="optimized" tabindex="0" aria-label="Compressed prompt" hidden></pre>
+          <div class="editor-footer result-footer"><span id="result-note">Ready when you are</span><button type="button" class="text-button" id="copy" disabled>Copy prompt <span aria-hidden="true">⧉</span></button></div>
+        </div>
+      </section>
+      <div class="controls"><div class="select-group"><div><label for="model">Tokenizer model</label><input id="model" list="models" value="gpt-4.1-mini" required maxlength="200" spellcheck="false"><datalist id="models"><option value="gpt-4.1-mini"><option value="gpt-4.1"><option value="gpt-4o"><option value="gpt-4o-mini"></datalist></div><div><label for="strategy">Strategy</label><select id="strategy"><option value="algorithmic">Algorithmic</option><option value="off">Off · compare original</option></select></div></div><button id="submit" class="primary-button" type="submit" disabled aria-describedby="status" title="Enter a gateway API key first"><span id="submit-label">Enter API key to compress</span><span aria-hidden="true">↗</span></button></div>
+    </form>
+    <p id="status" class="status" role="status" aria-live="polite">No LLM calls. No generated answers. Just a leaner prompt.</p>
+    <section class="metrics" aria-label="Compression metrics">
+      <div><p>ORIGINAL TOKENS</p><strong id="original-tokens">—</strong><span>Before compression</span></div>
+      <div><p>COMPRESSED TOKENS</p><strong id="optimized-tokens">—</strong><span>After compression</span></div>
+      <div class="savings"><p>TOKENS SAVED</p><strong id="saved-tokens">—</strong><span id="reduction">Waiting for a prompt</span></div>
+      <div><p>COMPRESSION TIME</p><strong id="compression-time">—</strong><span id="request-time">Server processing only</span></div>
+    </section>
+    <section id="details-panel" class="details-panel" hidden aria-label="Compression analysis"><div class="analysis-heading"><h2>Behind the compression</h2><span id="tokenizer" class="helper"></span></div><p id="decision"></p><div id="rules" class="rule-list"></div><details class="validation-details"><summary>Validation &amp; transformations</summary><pre id="validation"></pre></details></section>
+    <footer class="footnote"><span class="shield" aria-hidden="true">◇</span><p>Preservation comes first. Protected blocks stay unchanged while eligible surrounding instructions can compress. Ambiguous or exact-text tasks pass through unchanged. Token savings are estimates of input reduction, not confirmed billing savings.</p><span class="version">PROMPT LAB / 01</span></footer>
+  </main>
+</body>
+</html>

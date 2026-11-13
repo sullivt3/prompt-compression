@@ -14,6 +14,7 @@ from starlette.responses import Response
 from app.api.chat import router as chat_router
 from app.api.health import router as health_router
 from app.api.optimize import router as optimize_router
+from app.api.playground import router as playground_router
 from app.api.usage import router as usage_router
 from app.core.config import Settings
 from app.core.middleware import PayloadLimitMiddleware
@@ -103,6 +104,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response.headers["X-Request-ID"] = request.state.request_id
         return response  # type: ignore[no-any-return]
 
+    app.include_router(playground_router)
     app.include_router(usage_router, prefix="/v1")
     app.include_router(optimize_router, prefix="/v1")
     app.include_router(chat_router, prefix="/v1")

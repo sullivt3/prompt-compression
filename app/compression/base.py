@@ -10,7 +10,19 @@ class CompressionContext:
     model: str
     role: str = "user"
     enabled_rules: frozenset[str] = frozenset(
-        {"greeting_removal", "conversational_filler", "redundant_introduction", "whitespace"}
+        {
+            "greeting_removal",
+            "gratitude_removal",
+            "gratitude_closing",
+            "apology_removal",
+            "conversational_filler",
+            "redundant_introduction",
+            "request_wrapper",
+            "test_introduction",
+            "explanation_phrase",
+            "purpose_phrase",
+            "whitespace",
+        }
     )
 
 
